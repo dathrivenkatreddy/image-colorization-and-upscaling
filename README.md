@@ -3,7 +3,7 @@
 This project uses deep learning to colorize old **black-and-white** images and upscale them from low-resolution to high-resolution by a factor of 4.
 
 # Demo
-![enter image description here](https://i.ibb.co/1dYK6rt/collage.png)
+[![HGqfD0l.md.png](https://iili.io/HGqfD0l.md.png)](https://freeimage.host/i/HGqfD0l)
 
 # Models
 - [faas-colorization](https://github.com/alexellis/faas-colorization)
