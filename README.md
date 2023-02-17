@@ -12,6 +12,13 @@ This project uses deep learning to colorize old **black-and-white** images and u
 -  [ESRGAN](https://esrgan.readthedocs.io/en/latest/) model trained on [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/)
 ``RRDB_ESRGAN_x4``
 
+# Current Progress
+[![HGqGvu1.png](https://iili.io/HGqGvu1.png)](https://freeimage.host/)
+
+### To do:
+1. Integrate ``colorize.py`` and ``upscale.py`` into a python package
+2. **Streamlit app**  or  **Django REST API + WebUI**
+3. Tune model colorization model parameters for higher accuracy
 
 # References 
 
