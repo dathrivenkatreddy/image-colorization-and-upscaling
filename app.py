@@ -111,7 +111,7 @@ class Colorizer(object):
 
     def colorize(self, input_image, t_param):
 
-        bw_image = cv.imread(input_image)
+        bw_image = input_image
         rgb_image = (bw_image / 255.0).astype("float32")
         lab_image = cv.cvtColor(rgb_image, cv.COLOR_RGB2Lab)
         imgL = lab_image[:, :, 0]
@@ -133,6 +133,8 @@ class Colorizer(object):
         img_lab_out = np.concatenate(
             (imgL[:, :, np.newaxis], ab_dec_us), axis=2)
         img_bgr_out = np.clip(cv.cvtColor(img_lab_out, cv.COLOR_Lab2BGR), 0, 1)
+
+        return img_bgr_out
 
 
 class Upscaler(object):
@@ -163,44 +165,66 @@ class FileUpload(object):
         st.markdown(self.STYLE, unsafe_allow_html=True)
         self.file = st.file_uploader("Upload file", type=self.fileTypes)
         show_file = st.empty()
-        if not self.file:
-            show_file.info("Upload image to get started ")
-            return
-        content = self.file.getvalue()
-        if isinstance(self.file, BytesIO):
-            show_file.image(self.file)
-        else:
-            pass
-            # data = pd.read_csv(file)
-            # st.dataframe(data.head(10))
-        self.file.close()
+        if self.file is not None:
+            file_bytes = np.asarray(
+                bytearray(self.file.read()), dtype=np.uint8)
+            self.ocv_image = cv.imdecode(file_bytes, 1)
+            return self.ocv_image
+
+        # if not self.file:
+        #     show_file.info("Upload image to get started ")
+        #     return
+        # content = self.file.getvalue()
+        # if isinstance(self.file, BytesIO):
+        #     show_file.image(self.file)
+        # else:
+        #     pass
+        #     # data = pd.read_csv(file)
+        #     # st.dataframe(data.head(10))
+        # self.file.close()
 
 
 class ColorUps(object):
     def __init__(self):
         self.show = st.empty()
+        self.c_enable = 0
+        self.u_enable = 0
+        self.t_param = 50
+        self.u_param = 50
 
     def showOptions(self):
         with st.sidebar.container():
             st.sidebar.header("Colorizer")
-            c_enable = st.sidebar.checkbox('Enable')
-            if c_enable:
-                t_param = st.sidebar.slider(
-                    "Tuning [default : 50]", 0, 255, value=50)
-                st.sidebar.text(t_param)
+            self.c_enable = st.sidebar.checkbox('Enable')
+            if self.c_enable:
+                self.t_param = st.sidebar.slider(
+                    "Fine Tuning [default : 50]", 30, 70, value=50)
+                st.sidebar.text(self.t_param)
 
         with st.sidebar.container():
             st.sidebar.header("Upscaler")
-            u_enable = st.sidebar.checkbox('Upscale')
-            if u_enable:
-                u_param = st.sidebar.slider(
+            self.u_enable = st.sidebar.checkbox('Upscale')
+            if self.u_enable:
+                self.u_param = st.sidebar.slider(
                     "Parameter [default : 50]", 0, 255, value=50)
-                st.sidebar.text(u_param)
+                st.sidebar.text(self.u_param)
 
 
 if __name__ == "__main__":
+    st.title("ImgColorizer&Upscaler")
+    st.text('Ver 1.0')
+
     fileuploader = FileUpload()
-    fileuploader.run()
+    img = fileuploader.run()
     if fileuploader.file:
         mainApp = ColorUps()
         mainApp.showOptions()
+
+        image_display = st.empty()
+        image_display.image(img)
+
+        if mainApp.c_enable:
+            col = Colorizer()
+            color_img_out = col.colorize(img, mainApp.t_param)
+            image_display.image(color_img_out, channels='BGR')
+            # st.image(fileuploader.file)
