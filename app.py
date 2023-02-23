@@ -168,7 +168,6 @@ class FileUpload(object):
             return
         content = self.file.getvalue()
         if isinstance(self.file, BytesIO):
-            st.header("Original Image")
             show_file.image(self.file)
         else:
             pass
